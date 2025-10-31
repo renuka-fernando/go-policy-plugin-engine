@@ -1,0 +1,200 @@
+# Project Files
+
+## Core Components
+
+### Core Engine (`core/`)
+- **`interfaces.go`** (60 lines)
+  - Defines `Policy` interface
+  - Implements `PolicyRegistry` for managing policies
+  - Provides `Register()`, `Get()`, and `List()` methods
+
+- **`main.go`** (55 lines)
+  - Entry point for the policy engine
+  - Registers and executes all discovered policies
+  - Outputs results in JSON format
+  - Includes `RegisterPolicy()` function called by generated code
+
+- **`imports.go`** (7 lines)
+  - Placeholder file (gets overwritten by import-generator)
+  - Contains auto-generated import statements
+  - Registers policies via `init()` function
+
+- **`go.mod`** (3 lines)
+  - Module definition for core engine
+  - Go 1.21 requirement
+
+### Import Generator (`import-generator/`)
+- **`main.go`** (195 lines)
+  - Scans `/policies` directory for Go modules
+  - Parses `go.mod` files to extract module paths
+  - Discovers policy implementations
+  - Generates import statements and registration code
+  - Uses Go template system for code generation
+  - Implements `discoverPolicies()`, `parseGoMod()`, `findPolicyImplementations()`, `generateImports()`
+
+- **`go.mod`** (4 lines)
+  - Module definition for import generator
+  - Requires `golang.org/x/mod v0.14.0`
+
+- **`go.sum`** (2 lines)
+  - Checksums for dependencies
+
+## Build System
+
+- **`Dockerfile`** (28 lines)
+  - Based on `golang:1.21-alpine`
+  - Installs git for dependency fetching
+  - Copies core and import-generator source
+  - Pre-downloads import-generator dependencies
+  - Sets build.sh as entrypoint
+
+- **`build.sh`** (84 lines)
+  - Orchestrates the complete build process
+  - Step 1: Runs import generator to scan policies
+  - Step 2: Adds policy modules as replace directives
+  - Step 3: Resolves dependencies with `go mod tidy`
+  - Step 4: Compiles static binary
+  - Optional: Executes binary if "run" argument provided
+
+## Example Policies
+
+### Uppercase Policy (`example-policies/uppercase-policy/`)
+- **`policy.go`** (56 lines)
+  - Transforms strings to uppercase
+  - Handles both string and []string types
+  - Returns structured result with input/output
+
+- **`go.mod`** (3 lines)
+  - Module: `github.com/example/policies/uppercase-policy`
+
+### Validator Policy (`example-policies/validator-policy/`)
+- **`policy.go`** (61 lines)
+  - Validates required fields in input
+  - Checks for "message" and "data" fields
+  - Returns validation status and missing fields
+
+- **`go.mod`** (3 lines)
+  - Module: `github.com/example/policies/validator-policy`
+
+## Helper Scripts
+
+- **`Makefile`** (60 lines)
+  - `make build` - Build Docker image
+  - `make test` - Run full test
+  - `make run` - Run without rebuild
+  - `make show-imports` - Display generated code
+  - `make clean` - Remove Docker images
+  - `make build-only` - Extract binary
+  - `make help` - Show available commands
+
+## Configuration Files
+
+- **`.dockerignore`** (5 lines)
+  - Excludes example-policies, output, markdown files
+  - Reduces Docker build context size
+
+- **`.gitignore`** (24 lines)
+  - Ignores binaries, test files, coverage output
+  - Excludes vendor/, go.work
+  - Ignores IDE files
+
+## Documentation
+
+- **`README.md`** (395 lines)
+  - Complete user guide
+  - Architecture overview
+  - Quick start instructions
+  - Policy interface reference
+  - Usage examples
+  - Troubleshooting guide
+  - Development workflow
+  - Security considerations
+
+- **`plan.md`** (318 lines)
+  - Detailed architecture design
+  - Mermaid diagrams for system flow
+  - Implementation phases
+  - Technical considerations
+  - Alternative approaches comparison
+  - Testing strategy
+  - Future enhancements
+
+- **`SUMMARY.md`** (175 lines)
+  - Implementation overview
+  - Component breakdown
+  - Testing results
+  - Key features
+  - Validation checklist
+
+- **`QUICKSTART.md`** (140 lines)
+  - 5-minute getting started guide
+  - Step-by-step tutorial
+  - Example policy creation
+  - Common commands reference
+  - Troubleshooting tips
+
+- **`FILES.md`** (This file)
+  - Complete file listing
+  - Line counts
+  - Purpose description
+
+## Statistics
+
+### Total Files: 20
+- Go source files: 6
+- Shell scripts: 2
+- Docker/Build: 3
+- Documentation: 5
+- Configuration: 4
+
+### Total Lines of Code: ~1,500+
+- Core implementation: ~250 lines
+- Import generator: ~200 lines
+- Example policies: ~120 lines
+- Build system: ~100 lines
+- Documentation: ~1,000+ lines
+
+### Languages Used:
+- Go (core implementation)
+- Shell (build scripts)
+- Dockerfile (containerization)
+- Makefile (automation)
+- Markdown (documentation)
+
+## File Dependencies
+
+```
+Dockerfile
+  └── build.sh
+       ├── import-generator/main.go
+       │    └── core/imports.go (generated)
+       └── core/main.go
+            ├── core/interfaces.go
+            └── core/imports.go
+                 └── example-policies/**/*.go
+```
+
+## Auto-Generated Files
+
+These files are created during the build process:
+
+1. **`core/imports.go`** - Generated by import-generator
+2. **`core/policy-engine`** - Compiled binary
+3. **`core/go.sum`** - Created during `go mod tidy`
+
+## User-Created Files
+
+Users are expected to create:
+
+1. Policy directories under `my-policies/`
+2. Each policy needs:
+   - `go.mod` with module declaration
+   - `policy.go` with Policy type implementation
+
+## Optional Files
+
+Not required but helpful:
+
+- `output/` - Directory for extracted binaries
+- Custom policy directories
+- Additional test scripts

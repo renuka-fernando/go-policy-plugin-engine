@@ -464,27 +464,6 @@ func (r *PolicyRegistry) ExecuteWithMetrics(name string, ctx context.Context, in
 }
 ```
 
-## Future Enhancements
-
-- [ ] Hot-reload capabilities
-- [ ] Policy dependency resolution
-- [ ] Web UI for policy management
-- [ ] Policy marketplace/registry
-- [ ] Multi-architecture builds
-- [ ] Policy testing framework
-- [ ] Metrics and monitoring
-- [ ] Policy versioning support
-
-## Contributing
-
-1. Create your policy in `example-policies/`
-2. Test with the builder image
-3. Submit a pull request
-
-## License
-
-MIT
-
 ## Support
 
 For issues and questions, please open a GitHub issue.
